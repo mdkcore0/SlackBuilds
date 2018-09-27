@@ -1,0 +1,18 @@
+#!/bin/sh
+################################################################################
+# This script was created by: MDK - mdk@thecoreme.org                          #
+# http://projects.thecoreme.org/                                               #
+# Sep 27 2018                                                                  #
+#                                                                              #
+# Simple script to get custom build packages on Slackware                      #
+#                                                                              #
+################################################################################
+
+BUILD=${BUILD:-1}
+
+CC=clang
+CXX=clang++
+PKGTYPE=txz
+TAG=_mdk
+
+CC=$CC CXX=$CXX PKGTYPE=$PKGTYPE TAG=$TAG BUILD=$BUILD $@
