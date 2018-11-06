@@ -132,7 +132,7 @@ libvpx=""     ; [ "${VPX:-yes}" != "no" ]         && libvpx="--enable-libvpx"
 opengl=""     ; [ "${OPENGL:-yes}" != "no" ]      && opengl="--enable-opengl"
 openjpeg=""   ; [ "${JP2:-yes}" != "no" ]         && openjpeg="--enable-libopenjpeg"
 pulse=""      ; [ "${PULSEAUDIO:-yes}" != "no" ]  && pulse="--enable-libpulse"
-samba=""      ; [ "${SAMBA:-yes}" != "no" ]       && samba="--enable-libsmbclient"
+#samba=""      ; [ "${SAMBA:-yes}" != "no" ]       && samba="--enable-libsmbclient"
 wavpack=""    ; [ "${WAVPACK:-yes}" != "no" ]     && wavpack="--enable-libwavpack"
 libxcb=""     ; [ "${LIBXCB:-yes}" != "no" ]      && libxcb="--enable-libxcb"
 
@@ -225,11 +225,11 @@ CXXFLAGS="$SLKCFLAGS" \
   $openjpeg \
   $pulse \
   $rubberband \
-  $samba \
   $ssl \
   $tesseract \
   $wavpack \
   $libxcb
+  #$samba \
 
 make
 make install DESTDIR=$PKG
