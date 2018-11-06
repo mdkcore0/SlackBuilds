@@ -1,0 +1,17 @@
+#!/bin/sh
+################################################################################
+# This script was created by: MDK - mdk@thecoreme.org                          #
+# http://projects.thecoreme.org/                                               #
+# Nov 06 2018                                                                  #
+#                                                                              #
+# Simple script to update my slackware repo                                    #
+#                                                                              #
+################################################################################
+
+GENPATH=${GENPATH:-$HOME/GIT/SlackBuilds/extra}
+REPOPATH=$1
+
+export GPG_TTY=`tty`
+echo "UPDATESTARTUPTTY" | gpg-connect-agent > /dev/null 2>&1
+
+USERDEFS=$REPOPATH/genreprc sh $GENPATH/gen_repos_files.sh -n 1 $REPOPATH
