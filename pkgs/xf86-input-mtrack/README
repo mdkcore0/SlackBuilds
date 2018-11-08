@@ -1,0 +1,2 @@
+An Xorg driver for multitouch trackpads. Supports any trackpad whose
+kernel driver uses the slotted multitouch protocol.
