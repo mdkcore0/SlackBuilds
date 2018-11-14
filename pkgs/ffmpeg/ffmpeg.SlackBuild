@@ -84,7 +84,6 @@ libspeex=""   ; [ "${SPEEX:-no}" != "no" ]        && libspeex="--enable-libspeex
 libxvid=""    ; [ "${XVID:-no}" != "no" ]         && libxvid="--enable-libxvid"
 libbluray=""  ; [ "${BLURAY:-no}" != "no" ]       && libbluray="--enable-libbluray"
 libass=""     ; [ "${ASS:-no}" != "no" ]          && libass="--enable-libass"
-libopenal=""  ; [ "${OPENAL:-no}" != "no" ]       && libopenal="--enable-openal"
 libiec61883=""; [ "${IEC61883:-no}" != "no" ]     && libiec61883="--enable-libiec61883"
 libilbc=""    ; [ "${ILBC:-no}" != "no" ]         && libilbc="--enable-libilbc"
 libmodplug="" ; [ "${MODPLUG:-no}" != "no" ]      && libmodplug="--enable-libmodplug"
@@ -135,6 +134,7 @@ pulse=""      ; [ "${PULSEAUDIO:-yes}" != "no" ]  && pulse="--enable-libpulse"
 #samba=""      ; [ "${SAMBA:-yes}" != "no" ]       && samba="--enable-libsmbclient"
 wavpack=""    ; [ "${WAVPACK:-yes}" != "no" ]     && wavpack="--enable-libwavpack"
 libxcb=""     ; [ "${LIBXCB:-yes}" != "no" ]      && libxcb="--enable-libxcb"
+libopenal=""  ; [ "${OPENAL:-yes}" != "no" ]       && libopenal="--enable-openal"
 
 # Disable patent encumbered features:
 aac=""        ; [ "${AAC:-yes}" != "yes" ]           && aac="--disable-encoder=aac"
