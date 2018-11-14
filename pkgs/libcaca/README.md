@@ -1,7 +1,7 @@
 # Based on:
 http://linorg.usp.br/slackware/slackware64-current/source/l/libcaca/
 
-# Deps
+# Deps:
 - imlib2
 
 # Source:

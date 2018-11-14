@@ -1,6 +1,13 @@
 # Based on:
 https://slackbuilds.org/repository/14.2/multimedia/ffmpeg/
 
+# Deps:
+- OpenAL
+- nv-codec-headers
+
+# Conflicts:
+- ffmpeg
+
 # Notes:
 - Disabled samba
 

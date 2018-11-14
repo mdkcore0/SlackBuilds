@@ -1,6 +1,9 @@
 # Based on:
 https://slackbuilds.org/repository/14.2/multimedia/ffmpeg/
 
+# Deps:
+- OpenAL
+
 # Notes:
 - Disabled samba
 
