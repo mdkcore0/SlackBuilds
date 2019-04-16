@@ -72,7 +72,6 @@ fi
 # - xz
 # - zlib
 
-mp3lame=""    ; [ "${LAME:-no}" != "no" ]         && mp3lame="--enable-libmp3lame"
 libx264=""    ; [ "${X264:-no}" != "no" ]         && libx264="--enable-libx264"
 libcelt=""    ; [ "${CELT:-no}" != "no" ]         && libcelt="--enable-libcelt"
 libdc1394=""  ; [ "${DC1394:-no}" != "no" ]       && libdc1394="--enable-libdc1394"
@@ -135,6 +134,7 @@ pulse=""      ; [ "${PULSEAUDIO:-yes}" != "no" ]  && pulse="--enable-libpulse"
 wavpack=""    ; [ "${WAVPACK:-yes}" != "no" ]     && wavpack="--enable-libwavpack"
 libxcb=""     ; [ "${LIBXCB:-yes}" != "no" ]      && libxcb="--enable-libxcb"
 libopenal=""  ; [ "${OPENAL:-yes}" != "no" ]       && libopenal="--enable-openal"
+mp3lame=""    ; [ "${LAME:-yes}" != "no" ]         && mp3lame="--enable-libmp3lame"
 
 # Disable patent encumbered features:
 aac=""        ; [ "${AAC:-yes}" != "yes" ]           && aac="--disable-encoder=aac"
