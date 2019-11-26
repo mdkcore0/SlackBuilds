@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2006-2014  Eric Hameleers, Eindhoven, The Netherlands
+# Copyright (c) 2006-2018  Eric Hameleers, Eindhoven, The Netherlands
 # All rights reserved.
 #
 #   Permission to use, copy, modify, and distribute this software for
@@ -28,7 +28,7 @@
 # ---------------------------------------------------------------------------
 cat <<"EOT"
 # -------------------------------------------------------------------#
-# $Id: gen_repos_files.sh,v 1.94 2018/05/03 15:02:39 root Exp root $ #
+# $Id: gen_repos_files.sh,v 1.98 2019/03/17 10:59:22 root Exp root $ #
 # -------------------------------------------------------------------#
 EOT
 
@@ -36,7 +36,7 @@ EOT
 BASENAME=$( basename $0 )
 
 # The script'""s revision number will be displayed in the RSS feed:
-REV=$( echo "$Revision: 1.94 $" | cut -d' '  -f2 )
+REV=$( echo "$Revision: 1.98 $" | cut -d' '  -f2 )
 
 # The repository owner's defaults file;
 # you can override any of the default values in this file:
@@ -82,7 +82,7 @@ RSS_FEEDMAX=${RSS_FEEDMAX:-15}
 RSS_UUID=${RSS_UUID:-""}
 
 # Either use gpg or gpg2:
-GPGBIN=${GPGBIN:-"/usr/bin/gpg"}
+GPGBIN=${GPGBIN:-"/usr/bin/gpg2"}
 
 # Optionally use gpg-agent to cache the gpg passphrase instead of letting the
 # script keep it in the environment (note that if you define USE_GPGAGENT=1
@@ -164,6 +164,9 @@ if [ -n "$REPO_EXCLUDES" ]; then
     PRUNES="${PRUNES} -o -name ${substr} -prune "
   done
 fi
+
+# Use tar efficiently when only looking for one file:
+TARONE="tar --occurrence=1"
 
 # Command line parameter processing:
 while getopts ":ahl:mn:prstv" Option
@@ -273,19 +276,19 @@ function addpkg {
   METAFILE=${NAME%t[blxg]z}meta
   TXTFILE=${NAME%t[blxg]z}txt
 
+  # Determine the compression tool used for this package:
+  COMPEXE=$( pkgcomp $PKG )
+
   if [ "$FORCEPKG" == "yes" -o ! -f $LOCATION/$TXTFILE ]; then
     # This is a courtesy service:
     echo "--> Generating .txt file for $NAME"
     rm -f $LOCATION/$TXTFILE
-    $COMPEXE -cd $PKG | tar xOf - install/slack-desc | sed -n '/^#/d;/:/p' > $LOCATION/$TXTFILE
+    $COMPEXE -cd $PKG | $TARONE -xOf - install/slack-desc | sed -n '/^#/d;/:/p' > $LOCATION/$TXTFILE
     [ "$TOUCHUP" == "yes"  ] && touch -r $PKG $LOCATION/$TXTFILE || touch -d "$UPDATEDATE" $LOCATION/$TXTFILE
   fi
 
   if [ "$FORCEPKG" == "yes" -o ! -f $LOCATION/$METAFILE ]; then
     echo "--> Generating .meta file for $NAME"
-
-    # Determine the compression tool used for this package:
-    COMPEXE=$( pkgcomp $PKG )
 
     SIZE=$(du -s $PKG | cut -f 1)
 
@@ -299,9 +302,9 @@ function addpkg {
     fi
 
     if [ $FOR_SLAPTGET -eq 1 ]; then
-      REQUIRED=$($COMPEXE -cd $PKG | tar xOf - install/slack-required 2>/dev/null|tr -d ' '|xargs -r -iZ echo -n "Z,"|sed -e "s/,$//")
-      CONFLICTS=$($COMPEXE -cd $PKG | tar xOf - install/slack-conflicts 2>/dev/null|tr -d ' '|xargs -r -iZ echo -n "Z,"|sed -e "s/,$//")
-      SUGGESTS=$($COMPEXE -cd $PKG | tar xOf - install/slack-suggests 2>/dev/null|xargs -r )
+      REQUIRED=$($COMPEXE -cd $PKG | $TARONE -xOf - install/slack-required 2>/dev/null|tr -d ' '|xargs -r -iZ echo -n "Z,"|sed -e "s/,$//")
+      CONFLICTS=$($COMPEXE -cd $PKG | $TARONE -xOf - install/slack-conflicts 2>/dev/null|tr -d ' '|xargs -r -iZ echo -n "Z,"|sed -e "s/,$//")
+      SUGGESTS=$($COMPEXE -cd $PKG | $TARONE -xOf - install/slack-suggests 2>/dev/null|xargs -r )
     fi
 
     rm -f $LOCATION/$METAFILE
@@ -321,7 +324,7 @@ function addpkg {
     if [ -f $LOCATION/$TXTFILE ]; then
       cat $LOCATION/$TXTFILE >> $LOCATION/$METAFILE
     else
-      $COMPEXE -cd $PKG | tar xOf - install/slack-desc | sed -n '/^#/d;/:/p' >> $LOCATION/$METAFILE
+      $COMPEXE -cd $PKG | $TARONE -xOf - install/slack-desc | sed -n '/^#/d;/:/p' >> $LOCATION/$METAFILE
     fi
     echo "" >> $LOCATION/$METAFILE
   [ "$TOUCHUP" == "yes"  ] && touch -r $PKG $LOCATION/$METAFILE || touch -d "$UPDATEDATE" $LOCATION/$METAFILE
@@ -356,11 +359,11 @@ function addman {
   LOCATION=$(echo $PKG|sed -re "s/(.*)\/(.*.t[blxg]z)$/\1/")
   LSTFILE=${NAME%t[blxg]z}lst
 
+  # Determine the compression tool used for this package:
+  COMPEXE=$( pkgcomp $PKG )
+
   if [ "$FORCEPKG" == "yes" -o ! -f $LOCATION/$LSTFILE ]; then
     echo "--> Generating .lst file for $NAME"
-
-    # Determine the compression tool used for this package:
-    COMPEXE=$( pkgcomp $PKG )
 
     rm -f $LOCATION/$LSTFILE
     cat << EOF > $LOCATION/$LSTFILE
@@ -709,7 +712,7 @@ run_repo() {
   for pkg in $PKGS; do
     # Found a filename with matching format, is it really a slackpack?
     COMPEXE=$( pkgcomp $pkg )
-    if $COMPEXE -cd $pkg | tar tOf - install/slack-desc 1>/dev/null 2>&1 ; then
+    if $COMPEXE -cd $pkg | $TARONE -tOf - install/slack-desc 1>/dev/null 2>&1 ; then
       [ $DEBUG -eq 1 ] && echo "+++ Found package $pkg"
       # We need to run addpkg for every package, to populate PACKAGES.TXT:
       addpkg $pkg ${RDIR}/.PACKAGES.TXT
@@ -882,8 +885,10 @@ else
       rm -f $TESTTMP
       exit 1
     else
-      # Use the key fingerprint to determine whether GPG-KEY is outdated:
-      GPG_FPR=$($GPGBIN --with-colon --with-fingerprint --list-keys "$REPOSOWNERGPG" |grep ^fpr |cut -d: -f10)
+      # Use the key's fingerprint to determine whether GPG-KEY is outdated,
+      # note that newer GPG versions also show fingerprint records for any
+      # sub-key so we will have to filter those out:
+      GPG_FPR=$($GPGBIN --with-colon --with-fingerprint --list-keys "$REPOSOWNERGPG" |grep ^fpr |head -1 |cut -d: -f10)
       if [ -r ${REPOSROOT}/GPG-KEY ]; then
         # If the GPG-KEY file is outdated (user may have a new key),
         # then we delete this file and re-generate it in the next step:
